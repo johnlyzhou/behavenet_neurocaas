@@ -1,25 +1,25 @@
 #!/bin/bash
 
-#### Import functions for workflow management 
-#### Get the path to this function: 
-##execpath="$0"
-##echo execpath
-##echo "here is the processdir: "
-##echo $processdir
-##scriptpath="$(dirname "$execpath")/ncap_utils"
-##
-##source "$scriptpath/workflow.sh"
-#### Import functions for data transfer 
-##source "$scriptpath/transfer.sh"
-##
-#### Set up error logging
-##errorlog
-##
-#### Custom setup for this workflow
-##source .dlamirc
+## Import functions for workflow management 
+## Get the path to this function: 
+execpath="$0"
+echo execpath
+echo "here is the processdir: "
+echo $processdir
+scriptpath="$(dirname "$execpath")/ncap_utils"
+
+source "$scriptpath/workflow.sh"
+## Import functions for data transfer 
+source "$scriptpath/transfer.sh"
+
+## Set up error logging
+errorlog
+
+## Custom setup for this workflow
+source .dlamirc
 
 ## Environment setup
-##export PATH="/home/ubuntu/anaconda3/bin:$PATH"
+export PATH="/home/ubuntu/anaconda3/bin:$PATH"
 source activate behavenet
 
 ## Declare local storage locations:
@@ -58,11 +58,11 @@ for file in "${FILES[@]}" ; do
     if [[ "$FILETYPE" = "data" ]]
     then
 	    ## Stereotyped download script for data
-	    ##aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$datastore"
+	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$datastore"
 	    echo "downloading data $FILENAME"
     else
 	    ## Stereotyped download script for config
-	    ##aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$jsonstore"
+	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$jsonstore"
 	    echo "downloading jsons to .behavenet $FILENAME"
     fi
 done
@@ -79,7 +79,7 @@ eval "$RUNCOMMAND $RUNFLAGS"
 echo "Done, uploading results now"
 
 cd "$userhome/$outstore"
-##aws s3 sync ./ "s3://$bucketname/$groupdir/$processdir"
+aws s3 sync ./ "s3://$bucketname/$groupdir/$processdir"
 cd "$userhome"
 
 
