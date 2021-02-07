@@ -32,18 +32,20 @@ cd "$userhome/neurocaas"
 printf "$datastore\n$outstore\n$outstore\n" | ./setup_behavenet.py
 
 ## All JSON files in meta.json go in .behavenet
-jsonstore=".behavenet"
+jsonstore="$userhome/.behavenet"
 
 ## Download meta.json first
-##aws s3 cp "s3://$bucketname/$configpath/meta.json" "$userhome"
+aws s3 cp "s3://$bucketname/$configpath/meta.json" "$userhome"
 
 ## Parser will return an array of formatted strings representing key-value pairs 
 output=$(python meta_parser.py "$userhome/meta.json") 
+
 if [ $? != 0 ];
 then
 	echo "Error while parsing meta.json, exiting..."
 	exit 1
 fi 
+
 FILES=($(echo $output | tr -d '[],'))
 
 for file in "${FILES[@]}" ; do
@@ -58,28 +60,31 @@ for file in "${FILES[@]}" ; do
     if [[ "$FILETYPE" = "data" ]]
     then
 	    ## Stereotyped download script for data
-	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$datastore"
+	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$datastore"
 	    echo "downloading data $FILENAME"
     else
 	    ## Stereotyped download script for config
-	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$jsonstore"
+	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$jsonstore"
 	    echo "downloading jsons to .behavenet $FILENAME"
     fi
+
 done
 
 ## Begin BehaveNet model fitting
-echo "Starting analysis..."
-python params_parser.py "$userhome/$jsonstore/$params" "$datastore/$data" "$userhome/$jsonstore/directories.json"
+echo "File downloads complete, beginning analysis..."
+output=$(python params_parser.py "$jsonstore/$params" "$datastore/$data" "$jsonstore/directories.json")
+
+if [ $? != 0 ];
+then
+	echo "Error while parsing $params, exiting..."
+	exit 1
+fi 
+
 cd "$userhome/behavenet"
-RUNCOMMAND="python behavenet/fitting/ae_grid_search.py" 
-RUNFLAGS="--data_config $userhome/$jsonstore/$params --model_config $userhome/$jsonstore/$model --training_config $userhome/$jsonstore/$training --compute_config $userhome/$jsonstore/$compute"
 
-eval "$RUNCOMMAND $RUNFLAGS"
+python behavenet/fitting/ae_grid_search.py --data_config "$jsonstore/$params" --model_config "$jsonstore/$model" --training_config "$jsonstore/$training" --compute_config "$jsonstore/$compute"
 
-echo "Done, uploading results now"
-
-cd "$userhome/$outstore"
+## Stereotyped upload script for output
+cd "$outstore"
 aws s3 sync ./ "s3://$bucketname/$groupdir/$processdir"
 cd "$userhome"
-
-
