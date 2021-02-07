@@ -23,7 +23,7 @@ export PATH="/home/ubuntu/anaconda3/bin:$PATH"
 source activate behavenet
 
 ## Declare local storage locations:
-userhome="/media/peter/2TB/john"
+userhome="/home/ubuntu"
 datastore="$userhome/neurocaas_data"
 outstore="$userhome/neurocaas_output"
 
