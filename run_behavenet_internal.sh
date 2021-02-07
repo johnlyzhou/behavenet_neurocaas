@@ -24,12 +24,12 @@ source activate behavenet
 
 ## Declare local storage locations:
 userhome="/media/peter/2TB/john"
-datadir="$userhome/neurocaas_data"
-outputdir="$userhome/neurocaas_output"
+datastore="$userhome/neurocaas_data"
+outstore="$userhome/neurocaas_output"
 
 ## BehaveNet setup
 cd "$userhome/neurocaas"
-printf "$datadir\n$outputdir\n$outputdir\n" | ./setup_behavenet.py
+printf "$datastore\n$outstore\n$outstore\n" | ./setup_behavenet.py
 
 ## All JSON files in meta.json go in .behavenet
 jsonstore=".behavenet"
@@ -58,7 +58,7 @@ for file in "${FILES[@]}" ; do
     if [[ "$FILETYPE" = "data" ]]
     then
 	    ## Stereotyped download script for data
-	    ##aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$datadir"
+	    ##aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$datastore"
 	    echo "downloading data $FILENAME"
     else
 	    ## Stereotyped download script for config
@@ -69,9 +69,17 @@ done
 
 ## Begin BehaveNet model fitting
 echo "Starting analysis..."
-python params_parser.py "$userhome/$jsonstore/$params" "$datadir/$data" "$userhome/$jsonstore/directories.json"
+python params_parser.py "$userhome/$jsonstore/$params" "$datastore/$data" "$userhome/$jsonstore/directories.json"
 cd "$userhome/behavenet"
 RUNCOMMAND="python behavenet/fitting/ae_grid_search.py" 
 RUNFLAGS="--data_config $userhome/$jsonstore/$params --model_config $userhome/$jsonstore/$model --training_config $userhome/$jsonstore/$training --compute_config $userhome/$jsonstore/$compute"
 
 eval "$RUNCOMMAND $RUNFLAGS"
+
+echo "Done, uploading results now"
+
+cd "$userhome/$outstore"
+##aws s3 sync ./ "s3://$bucketname/$groupdir/$processdir"
+cd "$userhome"
+
+
