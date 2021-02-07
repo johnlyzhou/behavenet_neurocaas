@@ -25,10 +25,11 @@ source activate behavenet
 ## Declare local storage locations:
 userhome="/media/peter/2TB/john"
 datadir="$userhome/neurocaas_data"
+outputdir="$userhome/neurocaas_output"
 
 ## BehaveNet setup
 cd "$userhome/neurocaas"
-printf "$datadir\n$datadir\n$datadir\n" | ./setup_behavenet.py
+printf "$datadir\n$outputdir\n$outputdir\n" | ./setup_behavenet.py
 
 ## All JSON files in meta.json go in .behavenet
 jsonstore=".behavenet"
@@ -46,16 +47,31 @@ fi
 FILES=($(echo $output | tr -d '[],'))
 
 for file in "${FILES[@]}" ; do
-    KEY=${file%:*};
-    VAL=${file#*:};
-    echo $KEY" XX "$VAL;
+    
+    file="${file%\'}"
+    file="${file#\'}"
+    FILETYPE="${file%:*}"
+    FILENAME="${file#*:}"
+
+    eval "$FILETYPE=$FILENAME"
+
+    if [[ "$FILETYPE" = "data" ]]
+    then
+	    ## Stereotyped download script for data
+	    ##aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$datadir"
+	    echo "downloading data $FILENAME"
+    else
+	    ## Stereotyped download script for config
+	    ##aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$userhome/$jsonstore"
+	    echo "downloading jsons to .behavenet $FILENAME"
+    fi
 done
 
-## Stereotyped download script for data
-
-## Stereotyped download script for config
-
 ## Begin BehaveNet model fitting
-cd "$userhome/behavenet"
 echo "Starting analysis..."
+python params_parser.py "$userhome/$jsonstore/$params" "$datadir/$data" "$userhome/$jsonstore/directories.json"
+cd "$userhome/behavenet"
+RUNCOMMAND="python behavenet/fitting/ae_grid_search.py" 
+RUNFLAGS="--data_config $userhome/$jsonstore/$params --model_config $userhome/$jsonstore/$model --training_config $userhome/$jsonstore/$training --compute_config $userhome/$jsonstore/$compute"
 
+eval "$RUNCOMMAND $RUNFLAGS"
