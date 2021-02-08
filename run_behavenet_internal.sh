@@ -26,6 +26,7 @@ source activate behavenet
 userhome="/home/ubuntu"
 datastore="$userhome/neurocaas_data"
 outstore="$userhome/neurocaas_output"
+accessdir "$datastore" "$outstore"
 
 ## BehaveNet setup
 cd "$userhome/neurocaas"
