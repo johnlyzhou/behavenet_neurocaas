@@ -3,9 +3,6 @@
 ## Import functions for workflow management 
 ## Get the path to this function: 
 execpath="$0"
-echo execpath
-echo "here is the processdir: "
-echo $processdir
 scriptpath="$(dirname "$execpath")/ncap_utils"
 
 source "$scriptpath/workflow.sh"
@@ -62,16 +59,16 @@ for file in "${FILES[@]}" ; do
     then
 	    ## Stereotyped download script for data
 	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$datastore"
-	    echo "downloading data $FILENAME"
+	    echo "Downloading data $FILENAME"
     else
 	    ## Stereotyped download script for config
 	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$jsonstore"
-	    echo "downloading jsons to .behavenet $FILENAME"
+	    echo "Downloading json $FILENAME"
     fi
 
 done
 
-## Begin BehaveNet model fitting
+## Begin BehaveNet analysis
 echo "File downloads complete, beginning analysis..."
 output=$(python params_parser.py "$jsonstore/$params" "$datastore/$data" "$jsonstore/directories.json")
 
