@@ -38,11 +38,11 @@ jsonstore="$userhome/.behavenet"
 ##aws s3 cp "s3://$bucketname/$configpath/meta.json" "$userhome"
 
 ## Parser will return an array of formatted strings representing key-value pairs 
-output=$(python meta_parser.py "$userhome/meta.json") 
+output=$(python meta_parser.py "$userhome/config.yaml") 
 
 if [ $? != 0 ];
 then
-	echo "Error while parsing meta.json, exiting..."
+	echo "Error while parsing config.yaml, exiting..."
 	exit 1
 fi 
 
