@@ -29,14 +29,14 @@ accessdir "$datastore" "$outstore"
 cd "$userhome/neurocaas"
 printf "$datastore\n$outstore\n$outstore\n" | ./setup_behavenet.py
 
-## All JSON files in meta.json go in .behavenet
+## All JSON files in config go in .behavenet
 jsonstore="$userhome/.behavenet"
 
-## Download meta.json first
-aws s3 cp "s3://$bucketname/$configpath/meta.json" "$userhome"
+## Download config file first
+aws s3 cp "s3://$bucketname/$configpath/config.yaml" "$userhome"
 
 ## Parser will return an array of formatted strings representing key-value pairs 
-output=$(python meta_parser.py "$userhome/config.yaml") 
+output=$(python config_parser.py "$userhome/config.yaml") 
 
 if [ $? != 0 ];
 then
