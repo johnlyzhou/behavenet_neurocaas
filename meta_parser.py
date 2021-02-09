@@ -1,5 +1,5 @@
 import os
-import json
+import yaml 
 import argparse
 import sys
 
@@ -25,7 +25,7 @@ FILE_FLAGS = {
 def json_to_dict(filename):
     try:
         with open(filename) as f:
-            dictionary = json.load(f)
+            dictionary = yaml.full_load(f)
         return dictionary
     except:
         sys.exit('failed to load {}'.format(filename))
