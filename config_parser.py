@@ -22,7 +22,7 @@ FILE_FLAGS = {
 }
 
 
-def json_to_dict(filename):
+def yaml_to_dict(filename):
     try:
         with open(filename) as f:
             dictionary = yaml.full_load(f)
@@ -60,7 +60,7 @@ def check_data(metadata):
 
 def main(args):
     metafile = args.meta[0]
-    metadata = json_to_dict(metafile)
+    metadata = yaml_to_dict(metafile)
     check_data(metadata)
     formatted_print(metadata)
 
