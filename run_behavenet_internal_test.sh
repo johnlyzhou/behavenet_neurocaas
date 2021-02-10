@@ -28,7 +28,7 @@ datastore="$userhome/neurocaas_data"
 outstore="$userhome/neurocaas_output"
 
 ## BehaveNet setup
-cd "$userhome/neurocaas"
+cd "$userhome/neurocaas_remote"
 printf "$datastore\n$outstore\n$outstore\n" | ./setup_behavenet.py
 
 ## All JSON files in config go in .behavenet
