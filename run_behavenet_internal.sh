@@ -36,11 +36,11 @@ jsonstore="$userhome/.behavenet"
 aws s3 cp "s3://$bucketname/$configpath" "$userhome"
 
 ## Parser will return an array of formatted strings representing key-value pairs 
-output=$(python config_parser.py "$userhome/config.yaml") 
+output=$(python config_parser.py "$userhome/config.json") 
 
 if [ $? != 0 ];
 then
-	echo "Error while parsing config.yaml, exiting..."
+	echo "Error while parsing config, exiting..."
 	exit 1
 fi 
 
