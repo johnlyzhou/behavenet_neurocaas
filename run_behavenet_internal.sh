@@ -33,7 +33,7 @@ printf "$datastore\n$outstore\n$outstore\n" | ./setup_behavenet.py
 jsonstore="$userhome/.behavenet"
 
 ## Download config file first
-aws s3 cp "s3://$bucketname/$configpath/config.yaml" "$userhome"
+aws s3 cp "s3://$bucketname/$configpath" "$userhome"
 
 ## Parser will return an array of formatted strings representing key-value pairs 
 output=$(python config_parser.py "$userhome/config.yaml") 
@@ -58,11 +58,11 @@ for file in "${FILES[@]}" ; do
     if [[ "$FILETYPE" = "data" ]]
     then
 	    ## Stereotyped download script for data
-	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$datastore"
+	    aws s3 cp "s3://$bucketname/$(dirname "$inputpath")/${file#*:}" "$datastore"
 	    echo "Downloading data $FILENAME"
     else
 	    ## Stereotyped download script for config
-	    aws s3 cp "s3://$bucketname/$inputpath/${file#*:}" "$jsonstore"
+	    aws s3 cp "s3://$bucketname/$(dirname "$inputpath")/${file#*:}" "$jsonstore"
 	    echo "Downloading json $FILENAME"
     fi
 
