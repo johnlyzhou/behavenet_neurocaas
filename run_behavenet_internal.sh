@@ -28,6 +28,7 @@ accessdir "$datastore" "$outstore"
 ## BehaveNet setup
 cd "$userhome/neurocaas_remote"
 printf "$datastore\n$outstore\n$outstore\n" | ./setup_behavenet.py
+mv /root/.behavenet "$userhome"
 
 ## All JSON files in config go in .behavenet
 jsonstore="$userhome/.behavenet"
@@ -61,7 +62,7 @@ for file in "${FILES[@]}" ; do
 	    aws s3 cp "s3://$bucketname/$(dirname "$inputpath")/${file#*:}" "$datastore"
 	    echo "Downloading data $FILENAME"
     else
-	    ## Stereotyped download script for config
+	    ## Stereotyped download script for jsons
 	    aws s3 cp "s3://$bucketname/$(dirname "$inputpath")/${file#*:}" "$jsonstore"
 	    echo "Downloading json $FILENAME"
     fi
