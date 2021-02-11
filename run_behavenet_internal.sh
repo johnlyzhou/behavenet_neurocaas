@@ -15,26 +15,33 @@ errorlog
 ## Custom setup for this workflow
 source .dlamirc
 
+echo "setting up env"
 ## Environment setup
 export PATH="/home/ubuntu/anaconda3/bin:$PATH"
 source activate behavenet
 
+echo "declaring local storage"
 ## Declare local storage locations:
 userhome="/home/ubuntu"
 datastore="$userhome/neurocaas_data"
 outstore="$userhome/neurocaas_output"
 accessdir "$datastore" "$outstore"
 
+echo "setting up .behavenet"
 ## BehaveNet setup
 cd "$userhome/neurocaas_remote"
 printf "$datastore\n$outstore\n$outstore\n" | ./setup_behavenet.py
+ls -a /root
 mv /root/.behavenet "$userhome"
+ls -a "$userhome"
 
 ## All JSON files in config go in .behavenet
 jsonstore="$userhome/.behavenet"
 
+echo "downloading config"
 ## Download config file first
 aws s3 cp "s3://$bucketname/$configpath" "$userhome"
+ls "$userhome" 
 
 ## Parser will return an array of formatted strings representing key-value pairs 
 output=$(python config_parser.py "$userhome/config.json") 
