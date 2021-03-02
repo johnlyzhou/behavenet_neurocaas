@@ -1,5 +1,5 @@
 import os
-import yaml 
+import yaml
 import argparse
 import sys
 
@@ -14,7 +14,7 @@ FILE_TYPES = {
     'sessions': 'csv'
 }
 
-FILE_FLAGS = {
+COMMAND_FLAGS = {
     'compute': '--compute_config',
     'model': '--model_config',
     'training': '--training_config',
