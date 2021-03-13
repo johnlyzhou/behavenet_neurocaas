@@ -25,7 +25,7 @@ datastore="$userhome/neurocaas_data"
 outstore="$userhome/neurocaas_output"
 accessdir "$datastore" "$outstore"
 
-## BehaveNet setup
+## Move into script directory
 cd "$userhome/neurocaas_remote"
 
 ## All JSON files in config go in .behavenet
@@ -35,7 +35,7 @@ jsonstore="$userhome/.behavenet"
 aws s3 cp "s3://$bucketname/$configpath" "$userhome"
 
 ## Parser will return an array of formatted strings representing key-value pairs 
-output=$(python config_parser.py "$userhome/config.json") 
+output=$(python ncaasconfig_parse.py "$userhome/config.json") 
 
 if [ $? != 0 ];
 then
@@ -69,7 +69,7 @@ done
 
 ## Begin BehaveNet analysis
 echo "File downloads complete, beginning analysis..."
-output=$(python params_parser.py "$jsonstore/$params" "$datastore/$data" "$jsonstore/directories.json")
+output=$(python parameter_parse.py "$jsonstore/$params" "$datastore/$data" "$jsonstore/directories.json")
 
 if [ $? != 0 ];
 then
