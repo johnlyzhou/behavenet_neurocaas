@@ -3,6 +3,7 @@ from sklearn.cluster import KMeans
 from behavenet.plotting.cond_ae_utils import (
     plot_psvae_training_curves,
     plot_label_reconstructions,
+    plot_hyperparameter_search_results,
     make_latent_traversal_movie
 )
 from hyperparameter_search import (
@@ -24,47 +25,53 @@ def _cluster(latents, n_clusters=5):
 
 
 def plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model, n_labels,
-                                       which_as_array='alphas', **kwargs):
+                                       which_as_array='alphas', alpha=None, beta=None, gamma=None, **kwargs):
     alphas, betas, gammas = list_hparams(lab, expt, animal, session, expt_name, n_ae_latents)
     n_ae_latents = [n_ae_latents - n_labels]
+    if alpha is None:
+        alpha = alphas[0]
+    if beta is None:
+        beta = betas[0]
+    if gamma is None:
+        gamma = gammas[0]
     if which_as_array == 'alphas':
         try:
-            betas = betas[:1]
-            gammas = gammas[:1]
+            betas = [beta]
+            gammas = [gamma]
             rng_seeds_model = rng_seeds_model[:1]
             n_ae_latents = n_ae_latents[:1]
         except TypeError:
             pass
     if which_as_array == 'betas':
         try:
-            alphas = alphas[:1]
-            gammas = gammas[:1]
+            alphas = [alpha]
+            gammas = [gamma]
             rng_seeds_model = rng_seeds_model[:1]
             n_ae_latents = n_ae_latents[:1]
         except TypeError:
             pass
     if which_as_array == 'gammas':
         try:
-            betas = betas[:1]
-            alphas = alphas[:1]
+            betas = [beta]
+            alphas = [alpha]
             rng_seeds_model = rng_seeds_model[:1]
             n_ae_latents = n_ae_latents[:1]
         except TypeError:
             pass
     if which_as_array == 'rng_seeds_model':
         try:
-            betas = betas[:1]
-            gammas = gammas[:1]
-            alphas = alphas[:1]
+            betas = [beta]
+            gammas = [gamma]
+            alphas = [alpha]
             n_ae_latents = n_ae_latents[:1]
         except TypeError:
             pass
     if which_as_array == 'n_ae_latents':
         try:
-            betas = betas[:1]
-            gammas = gammas[:1]
+            betas = [beta]
+            gammas = [gamma]
             rng_seeds_model = rng_seeds_model[:1]
-            alphas = alphas[:1]
+            alphas = [alpha]
         except TypeError:
             pass
 
@@ -80,7 +87,7 @@ def plot_label_reconstructions_wrapper(lab, expt, animal, session, n_ae_latents,
 
 
 def make_latent_traversal_movie_wrapper(lab, expt, animal, session, label_names, expt_name, n_ae_latents, alpha, beta,
-                                        gamma, model_class='ps-vae', n_clusters=5, rng_seed_model=0, save_file=None,
+                                        gamma, model_class='ps-vae', n_clusters=10, rng_seed_model=0, save_file=None,
                                         **kwargs):
     if save_file is None:
         save_file = '~/hello'
@@ -103,16 +110,35 @@ def make_latent_traversal_movie_wrapper(lab, expt, animal, session, label_names,
                                 trial_idxs, batch_idxs, traversal_trials, save_file=save_file, **kwargs)
 
 
+def plot_hyperparameter_search_results_wrapper(lab, expt, animal, session, n_labels, label_names, n_ae_latents,
+                                               expt_name, alpha, beta, gamma, save_file, beta_gamma_n_ae_latents=None,
+                                               beta_gamma_expt_name=None, batch_size=None, format='pdf', **kwargs):
+    if beta_gamma_n_ae_latents is None:
+        beta_gamma_n_ae_latents = n_ae_latents - n_labels
+    if beta_gamma_expt_name is None:
+        beta_gamma_expt_name = expt_name
+    alpha_weights, beta_weights, gamma_weights = list_hparams(lab, expt, animal, session, expt_name, n_ae_latents)
+    alpha_n_ae_latents = [n_ae_latents - n_labels]
+    print(beta_gamma_n_ae_latents)
+    plot_hyperparameter_search_results(lab, expt, animal, session, n_labels, label_names, alpha_weights,
+                                       alpha_n_ae_latents, expt_name, beta_weights, gamma_weights,
+                                       beta_gamma_n_ae_latents, beta_gamma_expt_name, alpha, beta, gamma, save_file,
+                                       batch_size=batch_size, format=format, **kwargs)
+
+
 def plot_and_film_best(lab, expt, animal, session, label_names, expt_name, n_ae_latents, trials, beta=1, gamma=0,
                        model_class='ps-vae', n_clusters=5, rng_seed_model=0, rng_seeds_model=None, save_file=None,
                        **kwargs):
-
     if rng_seeds_model is None:
         rng_seeds_model = [rng_seed_model]
     alphas, betas, gammas = list_hparams(lab, expt, animal, session, expt_name, n_ae_latents)
     print(alphas, betas, gammas)
     alpha, beta, gamma = hyperparameter_search(lab, expt, animal, session, label_names, expt_name, n_ae_latents,
                                                alphas, betas, gammas, beta=beta, gamma=gamma, **kwargs)
+    # do for every model, save in version folder
+    # save hparam plots in expt_name directory 
+    # one for each alpha
+    # one setting alpha to best and search over beta
     plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model,
                                        len(label_names), **kwargs)
     plot_label_reconstructions_wrapper(lab, expt, animal, session, n_ae_latents, expt_name, len(label_names), trials,

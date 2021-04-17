@@ -55,7 +55,7 @@ def beta_gamma_search(lab, expt, animal, session, label_names, expt_name, n_ae_l
     metrics_list = ['loss_data_mse', 'loss_zu_mi', 'loss_zu_tc', 'loss_zu_dwkl', 'loss_AB_orth']
     metrics_dfs_frame_bg, metrics_dfs_marker_bg, metrics_dfs_corr_bg = [], [], []
     overlaps = {}
-
+    print("searching over b = {}, g = {}".format(beta_weights, gamma_weights))
     for beta in beta_weights:
         for gamma in gamma_weights:
             try:
