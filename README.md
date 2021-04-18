@@ -14,7 +14,7 @@ gamma/ - standard PS-VAE hyperparameter search over alpha, beta, and gamma
 
 nogamma/ - modules to run the PS-VAE hyperparameter search without the gamma hyperparameter, uses the nogamma branch of behavenet
 
-neurocaas/ - scripts and other files to automate the BehaveNet analysis on NeuroCAAS
+instance/ - scripts and other files to automate the BehaveNet analysis on NeuroCAAS
 
 
 For further documentation, refer to https://behavenet.readthedocs.io/en/develop/index.html and https://github.com/themattinthehatt/behavenet.
