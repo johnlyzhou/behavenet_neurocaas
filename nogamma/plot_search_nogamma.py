@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from sklearn.cluster import KMeans
 from behavenet.plotting.cond_ae_utils import (
     plot_psvae_training_curves,
@@ -12,7 +13,9 @@ from nogamma.hyperparameter_search_nogamma import (
 from nogamma.psvae_experiment_nogamma import PSvaeExperiment
 from nogamma.search_utils_nogamma import (
     load_latents_trials_frames,
-    list_hparams
+    list_hparams,
+    get_version_dir,
+    get_expt_dir_wrapper
 )
 
 
@@ -27,13 +30,20 @@ def _cluster(latents, n_clusters=5):
 def plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model, n_labels,
                                        which_as_array='alphas', alpha=None, beta=None, save_file=None, **kwargs):
     alphas, betas = list_hparams(lab, expt, animal, session, expt_name, n_ae_latents)
+    if save_file is None:
+        # save in expt_dir
+        save_dir = get_expt_dir_wrapper(lab, expt, animal, session, expt_name, n_ae_latents)
+        if which_as_array == 'alphas':
+            file_name = 'psvae_training_beta-{}'.format(beta)
+        else:
+            file_name = 'psvae_training_alpha-{}'.format(alpha)
+        save_file = os.path.join(save_dir, file_name)
+    print("Saving PS-VAE training graphs to {}".format(save_file))
     n_ae_latents = [n_ae_latents - n_labels]
     if alpha is None:
         alpha = alphas[0]
     if beta is None:
         beta = betas[0]
-    if save_file is None:
-        save_file = 'psvae_training_alpha-{}_beta-{}'.format(alpha, beta)
     if which_as_array == 'alphas':
         try:
             betas = [beta]
@@ -62,17 +72,24 @@ def plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_
             alphas = [alpha]
         except TypeError:
             pass
-
+    
     plot_psvae_training_curves(lab, expt, animal, session, alphas, betas, n_ae_latents, rng_seeds_model,
                                expt_name, n_labels, save_file=save_file, **kwargs)
 
 
-def plot_label_reconstructions_wrapper(lab, expt, animal, session, n_ae_latents, experiment_name, n_labels, trials,
+def plot_label_reconstructions_wrapper(lab, expt, animal, session, n_ae_latents, expt_name, n_labels, trials,
                                        alpha, beta, save_file=None, **kwargs):
     if save_file is None:
+        # save in each version_dir
+        save_dir = get_version_dir(lab, expt, animal, session, expt_name, n_ae_latents, alpha, beta)
+        file_name = 'label_reconstruction_alpha-{}_beta-{}'.format(alpha, beta)
+        save_file = os.path.join(save_dir, file_name)
+    print("Saving label reconstruction graphs to {}".format(save_file))
+    if save_file is None:
         save_file = 'label_reconstruct_trials-{}_alpha-{}_beta-{}'.format(trials, alpha, beta)
+        save_file = os.path.join(save_dir, file_name)
     n_ae_latents -= n_labels
-    plot_label_reconstructions(lab, expt, animal, session, n_ae_latents, experiment_name,
+    plot_label_reconstructions(lab, expt, animal, session, n_ae_latents, expt_name,
                                n_labels, trials, alpha=alpha, beta=beta, save_file=save_file, **kwargs)
 
 
@@ -80,7 +97,11 @@ def make_latent_traversal_movie_wrapper(lab, expt, animal, session, label_names,
                                         model_class='ps-vae', n_clusters=10, rng_seed_model=0, save_file=None,
                                         **kwargs):
     if save_file is None:
-        save_file = 'latent_movie_alpha-{}_beta-{}'.format(alpha, beta)
+        # save in each version_dir
+        save_dir = get_version_dir(lab, expt, animal, session, expt_name, n_ae_latents, alpha, beta)
+        file_name = 'latent_movie_alpha-{}_beta-{}'.format(alpha, beta)
+        save_file = os.path.join(save_dir, file_name)
+    print("Saving latent traversal movie to {}".format(save_file))
 
     movie_expt = PSvaeExperiment(lab, expt, animal, session, label_names, expt_name, n_ae_latents, alpha, beta,
                                  model_class=model_class, **kwargs)
@@ -104,7 +125,10 @@ def plot_hyperparameter_search_results_wrapper(lab, expt, animal, session, n_lab
                                                expt_name, alpha, beta, save_file=None, beta_n_ae_latents=None,
                                                beta_expt_name=None, batch_size=None, format='pdf', **kwargs):
     if save_file is None:
-        save_file = 'hparam_search_results_alpha-{}_beta-{}'.format(alpha, beta)
+        # save in expt_dir
+        save_dir = get_expt_dir_wrapper(lab, expt, animal, session, expt_name, n_ae_latents)
+        file_name = 'hparam_search_results_alpha-{}_beta-{}'.format(alpha, beta)
+        save_file = os.path.join(save_dir, file_name)
     if beta_n_ae_latents is None:
         beta_n_ae_latents = n_ae_latents - n_labels
     if beta_expt_name is None:
@@ -117,34 +141,52 @@ def plot_hyperparameter_search_results_wrapper(lab, expt, animal, session, n_lab
                                        batch_size=batch_size, format=format, **kwargs)
 
 
-def plot_and_film_best(lab, expt, animal, session, label_names, expt_name, n_ae_latents, trials, beta=1,
+def plot_and_film_best(lab, expt, animal, session, label_names, expt_name, n_ae_latents, trials, beta_start=1,
                        model_class='ps-vae', n_clusters=5, rng_seed_model=0, rng_seeds_model=None, save_file=None,
                        **kwargs):
     if rng_seeds_model is None:
         rng_seeds_model = [rng_seed_model]
     alphas, betas = list_hparams(lab, expt, animal, session, expt_name, n_ae_latents)
+    for i, v in kwargs.items():
+        print ("    ", i, ": ", v)
     alpha, beta = hyperparameter_search(lab, expt, animal, session, label_names, expt_name, n_ae_latents,
-                                        alphas, betas, beta=beta, **kwargs)
+                                        alphas, betas, beta=beta_start, **kwargs)
     print("Using alpha: {} and beta: {} from hyperparameter search".format(alpha, beta))
 
-    # do for every model, save in version folder
-    for setting in ['alphas', 'betas', 'rng_seeds_model', 'n_ae_latents']:
-        pass
+    # psvae training curves, plot across alphas for all betas and betas for all alphas, save in expt_dir
+    for setting in ['alphas', 'betas']:
+        if setting == 'alphas':
+            for beta_ in betas:
+                plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model,
+                                                   len(label_names), which_as_array=setting, beta=beta_, **kwargs)
+        else:
+            for alpha_ in alphas:
+                plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model,
+                                                   len(label_names), which_as_array=setting, alpha=alpha_, **kwargs)
 
-    # save hparam plots in expt_name directory, one for each alpha
+    # save hparam plots in expt_name directory, one for each alpha with beta=1
     for alpha_ in alphas:
+        print("Plotting hyperparameter search for alpha: {} and beta: {}".format(alpha_, beta_start))
         plot_hyperparameter_search_results_wrapper(lab, expt, animal, session, len(label_names), label_names,
-                                                   n_ae_latents, expt_name, alpha_, beta, save_file)
+                                                   n_ae_latents, expt_name, alpha_, beta_start, **kwargs)
 
-    # one setting alpha to best and search over beta
+    # hparam plots setting alpha to best and search over beta
     for beta_ in betas:
+        print("Plotting hyperparameter search for alpha: {} and beta: {}".format(alpha, beta_))
         plot_hyperparameter_search_results_wrapper(lab, expt, animal, session, len(label_names), label_names,
-                                                   n_ae_latents, expt_name, alpha, beta_, save_file)
-
-    plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model,
-                                       len(label_names), **kwargs)
-    plot_label_reconstructions_wrapper(lab, expt, animal, session, n_ae_latents, expt_name, len(label_names), trials,
-                                       alpha, beta, save_file, **kwargs)
-    make_latent_traversal_movie_wrapper(lab, expt, animal, session, label_names, expt_name, n_ae_latents, alpha, beta,
-                                        model_class=model_class, n_clusters=n_clusters,
-                                        rng_seed_model=rng_seed_model, save_file=save_file, **kwargs)
+                                                   n_ae_latents, expt_name, alpha, beta_, **kwargs)
+    
+    # make label reconstruction graphs for versions
+    for alpha_ in alphas:
+        for beta_ in betas:
+            print("Plotting label reconstructions for alpha: {} and beta: {}".format(alpha_, beta_))
+            plot_label_reconstructions_wrapper(lab, expt, animal, session, n_ae_latents, expt_name, len(label_names), trials,
+                                               alpha_, beta_, **kwargs)
+    
+    # make latent traversal movies for versions
+    for alpha_ in alphas:
+        for beta_ in betas:
+            print("Making latent traversal movie for alpha: {} and beta: {}".format(alpha_, beta_))
+            make_latent_traversal_movie_wrapper(lab, expt, animal, session, label_names, expt_name, n_ae_latents, alpha_, beta_,
+                                                model_class=model_class, n_clusters=n_clusters,
+                                                rng_seed_model=rng_seed_model, **kwargs)

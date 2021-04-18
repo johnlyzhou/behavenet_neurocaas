@@ -6,7 +6,6 @@ from behavenet.plotting import (
     load_latents,
     load_metrics_csv_as_df
 )
-# from behavenet.plotting.cond_ae_utils import get_label_r2
 from nogamma.search_utils_nogamma import get_label_r2
 
 
