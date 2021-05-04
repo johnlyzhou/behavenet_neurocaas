@@ -127,7 +127,7 @@ def plot_hyperparameter_search_results_wrapper(lab, expt, animal, session, n_lab
     if save_file is None:
         # save in expt_dir
         save_dir = get_expt_dir_wrapper(lab, expt, animal, session, expt_name, n_ae_latents)
-        file_name = 'hparam_search_results_alpha-{}_beta-{}'.format(alpha, beta)
+        file_name = 'hparam_search_results'
         save_file = os.path.join(save_dir, file_name)
     if beta_n_ae_latents is None:
         beta_n_ae_latents = n_ae_latents - n_labels
@@ -153,29 +153,16 @@ def plot_and_film_best(lab, expt, animal, session, label_names, expt_name, n_ae_
                                         alphas, betas, beta=beta_start, **kwargs)
     print("Using alpha: {} and beta: {} from hyperparameter search".format(alpha, beta))
 
-    # psvae training curves, plot across alphas for all betas and betas for all alphas, save in expt_dir
-    for setting in ['alphas', 'betas']:
-        if setting == 'alphas':
-            for beta_ in betas:
-                plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model,
-                                                   len(label_names), which_as_array=setting, beta=beta_, **kwargs)
-        else:
-            for alpha_ in alphas:
-                plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model,
-                                                   len(label_names), which_as_array=setting, alpha=alpha_, **kwargs)
+    # psvae training curves, plot across alphas for default beta and betas for best alpha, save in expt_dir
+    plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model,
+                                       len(label_names), which_as_array='alphas', beta=10, **kwargs)
+    plot_psvae_training_curves_wrapper(lab, expt, animal, session, expt_name, n_ae_latents, rng_seeds_model,
+                                       len(label_names), which_as_array='betas', alpha=alpha, **kwargs)
 
     # save hparam plots in expt_name directory, one for each alpha with beta=1
-    for alpha_ in alphas:
-        print("Plotting hyperparameter search for alpha: {} and beta: {}".format(alpha_, beta_start))
-        plot_hyperparameter_search_results_wrapper(lab, expt, animal, session, len(label_names), label_names,
-                                                   n_ae_latents, expt_name, alpha_, beta_start, **kwargs)
+    plot_hyperparameter_search_results_wrapper(lab, expt, animal, session, len(label_names), label_names,
+                                               n_ae_latents, expt_name, alpha, beta, **kwargs)
 
-    # hparam plots setting alpha to best and search over beta
-    for beta_ in betas:
-        print("Plotting hyperparameter search for alpha: {} and beta: {}".format(alpha, beta_))
-        plot_hyperparameter_search_results_wrapper(lab, expt, animal, session, len(label_names), label_names,
-                                                   n_ae_latents, expt_name, alpha, beta_, **kwargs)
-    
     # make label reconstruction graphs for versions
     for alpha_ in alphas:
         for beta_ in betas:
