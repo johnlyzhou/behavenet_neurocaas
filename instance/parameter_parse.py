@@ -43,6 +43,7 @@ def create_directory_structure(paramsdata, datafile, homedir):
     shutil.move(datafile, "{}/data.hdf5".format(filepath))
     print("moved {} to {}/data.hdf5".format(datafile, filepath))
 
+
 def main(args):
     paramsfile = args.params[0]
     datafile = args.data[0]

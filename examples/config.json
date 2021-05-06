@@ -1,0 +1,26 @@
+{
+
+####################################################
+## Files (provide either video + markers OR hdf5) ##
+####################################################
+
+"video": null,
+"markers": null,
+"hdf5": "data.hdf5",
+"architecture": "ae_arch.json",
+"compute": "ae_compute.json",
+"model": "ae_model.json",
+"training": "ae_training.json",
+"params": "dipoppa_pupil_params.json",
+"sessions": null,
+
+####################################
+## Hyperparameter search settings ##
+####################################
+
+"hyperparameter-search": "yes",
+"rng_seeds_model": null,
+"trials": [0, 1, 2],
+"n_clusters": 5
+
+}

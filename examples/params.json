@@ -1,0 +1,14 @@
+{
+    "lab": "dipoppa",
+    "expt": "pupil",
+    "animal": "MD0ST5",
+    "session": "session-3",
+    "x_pixels": 256,
+    "y_pixels": 128,
+    "n_input_channels": 1,
+    "use_output_mask": false,
+    "frame_rate": 30.0,
+    "neural_type": "ca",
+    "neural_bin_size": 0.0333333333,
+    "approx_batch_size": 200
+}

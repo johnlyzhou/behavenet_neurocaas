@@ -1,0 +1,54 @@
+{
+
+#############################
+## Commonly changed params ##
+#############################
+
+"experiment_name": "hparam-search", # type: str
+
+"model_type": "conv", # type: str, help: conv or linear
+
+"n_ae_latents": 5, # type: int, help: number of latents
+
+"l2_reg": 0.0, # type: float
+
+"rng_seed_model": 0, # type: int, help: control model initialization
+
+
+#############################################
+## Conv params (will be ignored if linear) ##
+#############################################
+
+"fit_sess_io_layers": false, # type: boolean
+
+"arch_types": "default", # type: str, help: this uses the default architecture from behavenet paper
+
+"ae_arch_json": "/home/ubuntu/.behavenet/ae_arch.json", # type: str, help: this uses the default architecture from behavenet paper
+
+
+#################
+## Misc params ##
+#################
+
+"model_class": "ps-vae", # type: str
+
+"conditional_encoder": false, # type: str
+
+"msp.alpha": 1e-5, # type: float, help: weight on matrix subspace projection loss
+
+"vae.beta": 1, # type: int, help: weight on VAE KL divergence term
+
+"vae.beta_anneal_epochs": 100, # type: int, help: number of epochs to linearly increase vae beta
+
+"beta_tcvae.beta": 40, # type: int, help: weight on VAE total correlation term
+
+"beta_tcvae.beta_anneal_epochs": 100, # type: int, help: number of epochs to linearly increase betatcvae beta
+
+"ps_vae.alpha": [50, 100, 500, 1000], # type: int, help: weight on label reconstruction term
+
+"ps_vae.beta": 10, # type: int, help: weight on total correlation term
+
+"ps_vae.anneal_epochs": 100 # type: int, help: number of epochs to linearly increase sss beta value
+
+}
+

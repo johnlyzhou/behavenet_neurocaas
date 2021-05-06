@@ -67,6 +67,7 @@ def check_data(metadata):
 def main(args):
     metafile = args.meta[0]
     metadata = yaml_to_dict(metafile)
+    print(metadata)
     check_data(metadata)
     formatted_print(metadata)
 
