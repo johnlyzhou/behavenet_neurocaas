@@ -19,7 +19,6 @@
 ####################################
 
 "hyperparameter-search": "yes",
-"rng_seeds_model": null,
 "trials": [0, 1, 2],
 "n_clusters": 5
 
