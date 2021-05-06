@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import pickle as pkl
 from tqdm import tqdm
-from pathlib import Path
 from sklearn.metrics import r2_score
 from behavenet import get_user_dir
 from behavenet.fitting.eval import export_latents
@@ -16,6 +15,7 @@ from behavenet.fitting.utils import (
 
 def apply_masks(data, masks):
     return data[masks == 1]
+
 
 def get_expt_dir_wrapper(lab, expt, animal, session, expt_name, n_ae_latents):
     hparams = get_psvae_hparams()
