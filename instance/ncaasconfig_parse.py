@@ -1,19 +1,23 @@
 import os
-import yaml
+import commentjson
 import argparse
 import sys
 
-MANDATORY_FILES = ["data", "compute", "model", "training", "params"]
+MANDATORY_FILES = ["compute", "model", "training", "params"]
 
 FILE_TYPES = {
-    "data": "hdf5",
-    "architecture": "json",
-    "compute": "json",
-    "model": "json",
-    "training": "json",
-    "params": "json",
-    "sessions": "csv"
+    "video": [".mp4", ".avi"],
+    "markers": ".csv",
+    "hdf5": ".hdf5",
+    "architecture": ".json",
+    "compute": ".json",
+    "model": ".json",
+    "training": ".json",
+    "params": ".json",
+    "sessions": ".csv"
 }
+
+HYPERPARAMETER_SETTINGS = ["hyperparameter-search", "trials", "n_clusters"]
 
 COMMAND_FLAGS = {
     "compute": "--compute_config",
@@ -26,7 +30,7 @@ COMMAND_FLAGS = {
 def yaml_to_dict(filename):
     try:
         with open(filename) as f:
-            dictionary = yaml.full_load(f)
+            dictionary = commentjson.load(f)
         return dictionary
     except:
         sys.exit("failed to load {}".format(filename))
@@ -35,7 +39,7 @@ def yaml_to_dict(filename):
 def formatted_print(metadict):
     formatted = []
     for filetype, name in metadict.items():
-        if name and not name.isspace() and name != "":
+        if filetype in FILE_TYPES and name and not name.isspace() and name != "":
             formatted.append("{}:{}".format(filetype, name))
 
     print(formatted)
@@ -47,7 +51,7 @@ def check_data(metadata):
             sys.exit("missing mandatory file {}".format(mandatory))
 
     for filetype, filename in metadata.items():
-        if filename:
+        if filename and filetype in FILE_TYPES:
             ext = os.path.splitext(filename)[1]
             try:
                 if ((type(FILE_TYPES[filetype]) == str and ext != FILE_TYPES[filetype]) or
@@ -61,13 +65,10 @@ def check_data(metadata):
             except KeyError:
                 sys.exit("{} isn\'t supposed to be in here!".format(filetype))
 
-    formatted_print(metadata)
-
 
 def main(args):
     metafile = args.meta[0]
     metadata = yaml_to_dict(metafile)
-    print(metadata)
     check_data(metadata)
     formatted_print(metadata)
 
