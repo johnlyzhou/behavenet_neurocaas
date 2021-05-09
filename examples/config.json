@@ -1,9 +1,4 @@
 {
-
-####################################################
-## Files (provide either video + markers OR hdf5) ##
-####################################################
-
 "video": null,
 "markers": null,
 "hdf5": "data.hdf5",
@@ -13,13 +8,4 @@
 "training": "ae_training.json",
 "params": "dipoppa_pupil_params.json",
 "sessions": null,
-
-####################################
-## Hyperparameter search settings ##
-####################################
-
-"hyperparameter-search": "yes",
-"trials": [0, 1, 2],
-"n_clusters": 5
-
 }
