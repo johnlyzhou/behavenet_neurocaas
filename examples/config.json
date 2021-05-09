@@ -1,7 +1,5 @@
 {
-"video": null,
-"markers": null,
-"hdf5": "data.hdf5",
+"data": "data.hdf5",
 "architecture": "ae_arch.json",
 "compute": "ae_compute.json",
 "model": "ae_model.json",
