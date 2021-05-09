@@ -1,3 +1,4 @@
 videos/
 .ipynb_checkpoints/
 nogamma/__pycache__/
+.idea/

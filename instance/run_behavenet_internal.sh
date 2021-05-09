@@ -17,7 +17,7 @@ source .dlamirc
 
 ## Environment setup
 export PATH="/home/ubuntu/anaconda3/bin:$PATH"
-source activate behavenet
+source activate nogamma 
 
 ## Declare local storage locations:
 userhome="/home/ubuntu"
@@ -25,17 +25,20 @@ datastore="$userhome/neurocaas_data"
 outstore="$userhome/neurocaas_output"
 accessdir "$datastore" "$outstore"
 
-## Move into script directory
+## BehaveNet setup
 cd "$userhome/neurocaas_remote"
 
 ## All JSON files in config go in .behavenet
 jsonstore="$userhome/.behavenet"
 
+## Make a second copy in .behavenet in root
+rootjsonstore="/root/.behavenet"
+
 ## Download config file first
 aws s3 cp "s3://$bucketname/$configpath" "$userhome"
 
 ## Parser will return an array of formatted strings representing key-value pairs 
-output=$(python ncaasconfig_parse.py "$userhome/config.json") 
+output=$(python config_parser.py "$userhome/config.json") 
 
 if [ $? != 0 ];
 then
@@ -62,6 +65,7 @@ for file in "${FILES[@]}" ; do
     else
 	    ## Stereotyped download script for jsons
 	    aws s3 cp "s3://$bucketname/$(dirname "$inputpath")/${file#*:}" "$jsonstore"
+	    aws s3 cp "s3://$bucketname/$(dirname "$inputpath")/${file#*:}" "$rootjsonstore"
 	    echo "Downloading json $FILENAME"
     fi
 
@@ -69,7 +73,7 @@ done
 
 ## Begin BehaveNet analysis
 echo "File downloads complete, beginning analysis..."
-output=$(python parameter_parse.py "$jsonstore/$params" "$datastore/$data" "$jsonstore/directories.json")
+output=$(python params_parser.py "$jsonstore/$params" "$datastore/$data" "$jsonstore/directories.json")
 
 if [ $? != 0 ];
 then
@@ -77,9 +81,12 @@ then
 	exit 1
 fi 
 
-cd "$userhome/behavenet"
+cd "$userhome/no-gamma-behavenet"
 
 python behavenet/fitting/ae_grid_search.py --data_config "$jsonstore/$params" --model_config "$jsonstore/$model" --training_config "$jsonstore/$training" --compute_config "$jsonstore/$compute"
+
+cd "$userhome/neurocaas_remote"
+python run_hparam_search.py "$userhome/config.json" "$userhome"
 
 ## Stereotyped upload script for output
 cd "$outstore"

@@ -13,11 +13,11 @@ from nogamma.plot_search_nogamma import plot_and_film_best
 def get_paths(home_dir, config_path):
     with open(config_path) as file:
         config = commentjson.load(file)
-    arch_path = home_dir + ".behavenet/" + config['architecture']
-    compute_path = home_dir + ".behavenet/" + config['compute']
-    model_path = home_dir + ".behavenet/" + config['model']
-    training_path = home_dir + ".behavenet/" + config['training']
-    params_path = home_dir + ".behavenet/" + config['params']
+    arch_path = home_dir + "/.behavenet/" + config['architecture']
+    compute_path = home_dir + "/.behavenet/" + config['compute']
+    model_path = home_dir + "/.behavenet/" + config['model']
+    training_path = home_dir + "/.behavenet/" + config['training']
+    params_path = home_dir + "/.behavenet/" + config['params']
 
     return arch_path, compute_path, model_path, training_path, params_path
 
@@ -45,9 +45,8 @@ def generate_search_args(home_dir, config_path):
     hparams['session_dir'], sess_ids = get_session_dir(hparams)
     hparams['rng_seed_model'] = model['rng_seed_model']
     hparams['model_class'] = model['model_class']
-    hparams['hyperparameter-search'] = config['hyperparameter-search']
-    hparams['trials'] = config['trials']
-    hparams['n_clusters'] = config['n_clusters']
+    hparams['trials'] = [0, 1, 2]
+    hparams['n_clusters'] = 5
     hparams['device'] = compute['device']
     hparams['as_numpy'] = training['as_numpy']
     hparams['batch_load'] = training['batch_load']
@@ -107,3 +106,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args)
+
