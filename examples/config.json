@@ -5,5 +5,5 @@
 "model": "ae_model.json",
 "training": "ae_training.json",
 "params": "dipoppa_pupil_params.json",
-"sessions": null,
+"sessions": null
 }
