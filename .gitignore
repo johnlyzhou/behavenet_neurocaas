@@ -1,7 +1,4 @@
 videos/
-
-behavenet_neurocaas/__pycache__/
 .ipynb_checkpoints/
+nogamma/__pycache__/
 .idea/
-
-test.ipynb

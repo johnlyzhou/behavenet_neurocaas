@@ -12,7 +12,9 @@ Repository Structure:
 
 examples/ - example JSON files required for NeuroCAAS analysis usage
 
-behavenet/ - modules to run the PS-VAE hyperparameter search
+gamma/ - standard PS-VAE hyperparameter search over alpha, beta, and gamma
+
+nogamma/ - modules to run the PS-VAE hyperparameter search without the gamma hyperparameter, uses the nogamma branch of behavenet
 
 instance/ - scripts and other files to automate the BehaveNet analysis on NeuroCAAS
 
