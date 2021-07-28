@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
-from nogamma.psvae_experiment_nogamma import PSvaeExperiment
+from behavenet.psvae_experiment import PSvaeExperiment
 from behavenet.fitting.utils import get_best_model_and_data
 from behavenet.plotting import (
     load_latents,
     load_metrics_csv_as_df
 )
-from nogamma.search_utils_nogamma import get_label_r2
+from behavenet.search_utils import get_label_r2
 
 
 def alpha_search(lab, expt, animal, session, label_names, expt_name, n_ae_latents, alpha_weights, beta,

@@ -7,11 +7,11 @@ from behavenet.plotting.cond_ae_utils import (
     plot_hyperparameter_search_results,
     make_latent_traversal_movie
 )
-from nogamma.hyperparameter_search_nogamma import (
+from behavenet.hyperparameter_search import (
     hyperparameter_search
 )
-from nogamma.psvae_experiment_nogamma import PSvaeExperiment
-from nogamma.search_utils_nogamma import (
+from behavenet.psvae_experiment import PSvaeExperiment
+from behavenet.search_utils import (
     load_latents_trials_frames,
     list_hparams,
     get_version_dir,
