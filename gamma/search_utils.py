@@ -1,9 +1,11 @@
 import os
+
 import numpy as np
 import pandas as pd
 import pickle as pkl
 from tqdm import tqdm
 from sklearn.metrics import r2_score
+
 from behavenet import get_user_dir
 from behavenet.fitting.eval import export_latents
 from behavenet.fitting.utils import (
@@ -15,6 +17,38 @@ from behavenet.fitting.utils import (
 
 def apply_masks(data, masks):
     return data[masks == 1]
+
+
+def get_expt_dir_wrapper(lab, expt, animal, session, expt_name, n_ae_latents):
+    hparams = get_psvae_hparams()
+    get_lab_example(hparams, lab, expt)
+    hparams['experiment_name'] = expt_name
+    hparams['n_ae_latents'] = n_ae_latents
+    hparams['animal'] = animal
+    hparams['session'] = session
+    hparams['session_dir'], sess_ids = get_session_dir(hparams)
+    return get_expt_dir(hparams)
+
+
+def get_version_dir(lab, expt, animal, session, expt_name, n_ae_latents, alpha, beta, gamma):
+    hparams = get_psvae_hparams()
+    get_lab_example(hparams, lab, expt)
+    hparams['experiment_name'] = expt_name
+    hparams['n_ae_latents'] = n_ae_latents
+    hparams['animal'] = animal
+    hparams['session'] = session
+    hparams['session_dir'], sess_ids = get_session_dir(hparams)
+    hparams['expt_dir'] = get_expt_dir(hparams)
+    for version_dir in os.listdir(hparams['expt_dir']):
+        filename = os.path.join(hparams['expt_dir'], version_dir, 'meta_tags.pkl')
+        if os.path.exists(filename):
+            meta_tags = pkl.load(open(filename, 'rb'))
+            if alpha == meta_tags['ps_vae.alpha'] \
+                    and beta == meta_tags['ps_vae.beta'] \
+                    and gamma == meta_tags['ps_vae.gamma']:
+                return os.path.join(hparams['expt_dir'], version_dir)
+    print("Version does not exist for alpha: {}, beta: {}, gamma: {}".format(alpha, beta, gamma))
+    return None
 
 
 def get_psvae_hparams(**kwargs):
@@ -63,11 +97,13 @@ def list_hparams(lab, expt, animal, session, expt_name, n_ae_latents):
     betas = set()
     gammas = set()
     for version_dir in os.listdir(hparams['expt_dir']):
-        filename = os.path.join(hparams['expt_dir'], version_dir, 'meta_tags.pkl')
-        meta_tags = pkl.load(open(filename, 'rb'))
-        alphas.add(meta_tags['ps_vae.alpha'])
-        betas.add(meta_tags['ps_vae.beta'])
-        gammas.add(meta_tags['ps_vae.gamma'])
+        if 'version' in version_dir:
+            filename = os.path.join(hparams['expt_dir'], version_dir, 'meta_tags.pkl')
+            if os.path.exists(filename):
+                meta_tags = pkl.load(open(filename, 'rb'))
+                alphas.add(meta_tags['ps_vae.alpha'])
+                betas.add(meta_tags['ps_vae.beta'])
+                gammas.add(meta_tags['ps_vae.gamma'])
     return sorted(list(alphas)), sorted(list(betas)), sorted(list(gammas))
 
 

@@ -17,7 +17,7 @@ source .dlamirc
 
 ## Environment setup
 export PATH="/home/ubuntu/anaconda3/bin:$PATH"
-source activate nogamma 
+source activate behavenet 
 
 ## Declare local storage locations:
 userhome="/home/ubuntu"
@@ -81,7 +81,7 @@ then
 	exit 1
 fi 
 
-cd "$userhome/no-gamma-behavenet"
+cd "$userhome/behavenet"
 
 python behavenet/fitting/ae_grid_search.py --data_config "$jsonstore/$params" --model_config "$jsonstore/$model" --training_config "$jsonstore/$training" --compute_config "$jsonstore/$compute"
 
