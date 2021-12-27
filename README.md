@@ -6,7 +6,7 @@ This repository contains the source code copied into the custom [Amazon Machine 
 
 The BehaveNet analysis requires multiple dataset files with flexible extensions and names. In addition, it has certain environment setup requirements that require user input and cannot be done in an automated NeuroCAAS analysis. However, the current NeuroCAAS drag-n-drop interface only allows for a single dataset file for each analysis (selecting multiple dataset files launches a separate analysis instance for each file). Since all uploaded dataset files are available in the S3 bucket, this implementation uses the config file (must be named config.json) to provide all filenames required for the analysis and analysis options, and uploads those files as dataset files. In the internal bash script, it calls a separate script to parse the config file, download all specified dataset files, and run any desired optional commands. Since the config file specifies dataset filenames, selection of a dataset file in the NeuroCAAS web interface does not matter.
 
-Repository Structure:
+### Repository Structure:
 
 examples/ - example JSON files required for NeuroCAAS analysis usage, including PS-VAE architecture specifications, compute resources, hyperparameter settings, etc.
 
@@ -16,11 +16,11 @@ nogamma/ - implements the hyperparameter search and plotting functions over alph
 
 instance/ - scripts and other files to automate the BehaveNet analysis on NeuroCAAS
 
-AMI Setup Notes:
+### AMI Setup Notes:
 
 Requires a .behavenet containing identical directories.json files in the /root dir and in the /home/ubuntu dir to work properly, since the process is run as root but all analysis takes place as the "ubuntu" user.
 
-NeuroCAAS Usage Notes:
+### NeuroCAAS Usage Notes:
 
 When running an analysis on the NeuroCAAS website, only check ONE input box - it doesn't matter which one, the config.json will inform the EC2 instance of which files to download - checking multiple boxes will launch multiple instances running the exact same analysis (for parallelized jobs using different data files, contact neurocaas@gmail.com).
 
