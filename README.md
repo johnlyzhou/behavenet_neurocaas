@@ -1,4 +1,4 @@
-# Behavenet for Neurocaas
+# BehaveNet for Neurocaas
 
 EC2 Instance Notes:
 
