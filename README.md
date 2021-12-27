@@ -1,12 +1,14 @@
-# BehaveNet for Neurocaas
+# BehaveNet for NeuroCAAS
 
-EC2 Instance Notes:
+This repository contains files that are copied over to the custom [Amazon Machine Image (AMI)](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AMIs.html) used for the BehaveNet analysis on [NeuroCAAS](http://www.neurocaas.org/). 
 
-Needs a .behavenet containing directories.json in the /root dir and in the /home/ubuntu dir to work properly, since process is run as /root but all analysis takes place in /home/ubuntu. The analysis only directly references the directories.json in /root/.behavenet, all other jsons are fine in /home/ubuntu/.behavenet.
+AMI Setup Notes:
 
-Usage Notes:
+Requires a .behavenet containing identical directories.json files in the /root dir and in the /home/ubuntu dir to work properly, since the process is run as root but all analysis takes place as the "ubuntu" user.
 
-When running an analysis on the NeuroCAAS website, only check ONE input box - it doesn't matter which one, the config.json will inform the EC2 instance of which files to download.
+NeuroCAAS Usage Notes:
+
+When running an analysis on the NeuroCAAS website, only check ONE input box - it doesn't matter which one, the config.json will inform the EC2 instance of which files to download - checking multiple boxes will launch multiple instances running the exact same analysis (for parallelized jobs using different data files, contact neurocaas@gmail.com).
 
 Repository Structure:
 
